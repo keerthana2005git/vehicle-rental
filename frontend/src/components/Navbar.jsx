@@ -4,12 +4,6 @@ import { Car, User, Calendar, ShieldCheck, LogOut, ShieldAlert } from 'lucide-re
 export function Navbar({ user, onOpenAuth, onOpenMyBookings, onOpenAdmin, currentView, setCurrentView, bookingCount }) {
   return (
     <header className="sticky top-0 z-40 bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-800">
-      {/* Top Hertz Gold Banner */}
-      <div className="bg-gradient-to-r from-[#FFCC00] via-[#FBBF24] to-[#F59E0B] text-black text-xs font-bold py-1 px-4 text-center tracking-wider flex items-center justify-center gap-2">
-        <span className="bg-black text-[#FFCC00] px-2 py-0.5 rounded text-[10px] uppercase font-extrabold">Hertz Gold Plus</span>
-        <span>Earn points towards free rental days & skip the counter at major airport locations.</span>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Logo */}
         <div 

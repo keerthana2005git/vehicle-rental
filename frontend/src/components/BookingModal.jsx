@@ -54,7 +54,9 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
     try {
       const bookingData = {
         customerId: user?.userId || 1,
+        username: user?.username || '',
         vehicleId: vehicle.id,
+        vehicle: vehicle,
         startDate: searchParams.startDate,
         endDate: searchParams.endDate,
         totalDays: days,

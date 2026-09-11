@@ -222,7 +222,9 @@ export const api = {
       id: Date.now(),
       bookingReference: bookingRef,
       customerId: bookingRequest.customerId || 1,
+      username: bookingRequest.username || '',
       vehicleId: bookingRequest.vehicleId,
+      vehicle: bookingRequest.vehicle || null,
       startDate: bookingRequest.startDate,
       endDate: bookingRequest.endDate,
       totalDays: bookingRequest.totalDays || 3,
@@ -263,9 +265,10 @@ export const api = {
   },
 
   // Customer Bookings
-  async getMyBookings(customerId = 1) {
+  async getMyBookings(userIdentifier) {
+    if (!userIdentifier) return [];
     try {
-      const res = await fetch(`${API_BASE}/bookings/customer/${customerId}`, {
+      const res = await fetch(`${API_BASE}/bookings/customer/${userIdentifier}`, {
         headers: getAuthHeaders()
       });
       if (res.ok) {
@@ -274,7 +277,11 @@ export const api = {
       }
     } catch (e) {}
 
-    return JSON.parse(localStorage.getItem('my_bookings') || '[]');
+    const all = JSON.parse(localStorage.getItem('my_bookings') || '[]');
+    return all.filter(b => 
+      (b.username && String(b.username).toLowerCase() === String(userIdentifier).toLowerCase()) ||
+      (b.customerId && String(b.customerId) === String(userIdentifier))
+    );
   },
 
   // Cancel Booking

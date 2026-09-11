@@ -38,11 +38,15 @@ export function App() {
   // Initialize
   useEffect(() => {
     const cachedUser = localStorage.getItem('user');
+    let u = null;
     if (cachedUser) {
-      setUser(JSON.parse(cachedUser));
+      try {
+        u = JSON.parse(cachedUser);
+        setUser(u);
+      } catch (e) {}
     }
     loadFleet();
-    updateBookingCount();
+    updateBookingCount(u);
   }, []);
 
   const loadFleet = async () => {
@@ -50,19 +54,27 @@ export function App() {
     setVehicles(fleet);
   };
 
-  const updateBookingCount = async () => {
-    const bookings = await api.getMyBookings();
+  const updateBookingCount = async (currentUser = user) => {
+    if (!currentUser) {
+      setBookingCount(0);
+      return;
+    }
+    const bookings = await api.getMyBookings(currentUser.userId || currentUser.username);
     setBookingCount(bookings.filter(b => b.status !== 'CANCELLED').length);
   };
 
   const handleSelectVehicle = (vehicle) => {
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setSelectedVehicle(vehicle);
   };
 
   const handleBookingSuccess = (data) => {
     setSelectedVehicle(null);
     setConfirmedBookingData(data);
-    updateBookingCount();
+    updateBookingCount(user);
     loadFleet();
   };
 
@@ -157,6 +169,7 @@ export function App() {
           <MyBookings
             user={user}
             onBackToFleet={() => setCurrentView('catalog')}
+            onOpenAuth={() => setShowAuthModal(true)}
           />
         )}
 
@@ -196,7 +209,7 @@ export function App() {
           onClose={() => setShowAuthModal(false)}
           onAuthSuccess={(userData) => {
             setUser(userData);
-            updateBookingCount();
+            updateBookingCount(userData);
           }}
         />
       )}

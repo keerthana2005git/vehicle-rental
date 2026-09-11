@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
-import { Calendar, Car, XCircle, Clock, CheckCircle2, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Calendar, Car, XCircle, Clock, CheckCircle2, ArrowLeft, RefreshCw, User as UserIcon } from 'lucide-react';
 
-export function MyBookings({ user, onBackToFleet }) {
+export function MyBookings({ user, onBackToFleet, onOpenAuth }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancellingId, setCancellingId] = useState(null);
 
   const fetchBookings = async () => {
+    if (!user) {
+      setBookings([]);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
-      const data = await api.getMyBookings(user?.userId || 1);
+      const data = await api.getMyBookings(user.userId || user.username);
       setBookings(data);
     } catch (e) {
       console.error(e);
@@ -61,7 +66,21 @@ export function MyBookings({ user, onBackToFleet }) {
       </div>
 
       {/* Bookings List */}
-      {loading ? (
+      {!user ? (
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center">
+          <UserIcon className="w-12 h-12 text-[#FFCC00] mx-auto mb-3 opacity-80" />
+          <h3 className="text-lg font-bold text-white mb-1">Sign In Required</h3>
+          <p className="text-xs text-slate-400 mb-6 max-w-md mx-auto">
+            Please sign in or register an account to view and manage your personal vehicle reservations.
+          </p>
+          <button
+            onClick={onOpenAuth}
+            className="px-6 py-3 bg-[#FFCC00] hover:bg-[#E5B800] text-black font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-[#FFCC00]/10 cursor-pointer"
+          >
+            Sign In / Join
+          </button>
+        </div>
+      ) : loading ? (
         <div className="p-12 text-center text-slate-400">Loading your reservations...</div>
       ) : bookings.length > 0 ? (
         <div className="space-y-4">

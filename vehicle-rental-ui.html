@@ -38,12 +38,6 @@
 </head>
 <body class="bg-[#0B0F19] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-[#FFCC00] selection:text-black">
 
-  <!-- TOP GOLD REWARDS BANNER -->
-  <div class="bg-gradient-to-r from-[#FFCC00] via-[#FBBF24] to-[#F59E0B] text-black text-xs font-bold py-1.5 px-4 text-center tracking-wider flex items-center justify-center gap-2 shadow-sm">
-    <span class="bg-black text-[#FFCC00] px-2 py-0.5 rounded text-[10px] uppercase font-extrabold">Hertz Gold Plus</span>
-    <span>Earn points towards free rental days & skip the counter at major airport terminals.</span>
-  </div>
-
   <!-- NAVBAR -->
   <header class="sticky top-0 z-40 bg-[#0F172A]/95 backdrop-blur-md border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -674,18 +668,24 @@
     }
 
     function openBookingModal(vehicleId) {
+      if (!activeUser) {
+        openAuthModal();
+        const errEl = document.getElementById('auth-error');
+        errEl.innerText = '⚠️ Please Sign In or Register first before selecting and booking a vehicle.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
       selectedVehicle = FLEET_DATA.find(v => v.id === vehicleId);
       currentStep = 1;
       document.getElementById('modal-vehicle-title').innerText = `${selectedVehicle.make} ${selectedVehicle.model} (${selectedVehicle.modelYear})`;
       
-      // Auto-prefill driver info if user is logged in
-      if (activeUser) {
-        const parts = (activeUser.fullName || '').split(' ');
-        document.getElementById('driver-first-name').value = parts[0] || activeUser.username;
-        document.getElementById('driver-last-name').value = parts.slice(1).join(' ') || '';
-        document.getElementById('driver-email').value = activeUser.email || '';
-        document.getElementById('driver-license').value = activeUser.licenseNumber || 'DL-KA-2024001';
-      }
+      // Auto-prefill driver info with logged-in user
+      const parts = (activeUser.fullName || '').split(' ');
+      document.getElementById('driver-first-name').value = parts[0] || activeUser.username;
+      document.getElementById('driver-last-name').value = parts.slice(1).join(' ') || '';
+      document.getElementById('driver-email').value = activeUser.email || '';
+      document.getElementById('driver-license').value = activeUser.licenseNumber || 'DL-KA-2024001';
       
       updateModalStepUI();
       updateCalculation();
@@ -755,6 +755,12 @@
     }
 
     function completeBooking() {
+      if (!activeUser) {
+        closeBookingModal();
+        openAuthModal();
+        return;
+      }
+
       const total = updateCalculation();
       const days = getRentalDays();
       const ref = "BK-" + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -768,7 +774,8 @@
         days: days,
         amount: total,
         status: 'CONFIRMED',
-        driverName: (document.getElementById('driver-first-name').value + ' ' + document.getElementById('driver-last-name').value).trim() || 'Valued Customer'
+        username: activeUser.username,
+        driverName: (document.getElementById('driver-first-name').value + ' ' + document.getElementById('driver-last-name').value).trim() || activeUser.fullName || activeUser.username
       };
 
       myBookings.unshift(booking);
@@ -791,10 +798,22 @@
 
     function renderBookings() {
       const container = document.getElementById('bookings-list');
-      if (myBookings.length === 0) {
+      if (!activeUser) {
         container.innerHTML = `
           <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center">
-            <p class="text-base font-bold text-white mb-2">No Active Reservations</p>
+            <p class="text-base font-bold text-white mb-2">Sign In Required</p>
+            <p class="text-xs text-slate-400 mb-6">Please sign in or create an account to view your personal reservations.</p>
+            <button onclick="openAuthModal()" class="px-5 py-2.5 bg-[#FFCC00] text-black font-extrabold rounded-xl text-xs uppercase cursor-pointer">Sign In / Join</button>
+          </div>
+        `;
+        return;
+      }
+
+      const userBookings = myBookings.filter(b => b.username === activeUser.username);
+      if (userBookings.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center">
+            <p class="text-base font-bold text-white mb-2">No Active Reservations for ${activeUser.fullName || activeUser.username}</p>
             <p class="text-xs text-slate-400 mb-6">Explore our fleet catalog to book your next vehicle.</p>
             <button onclick="switchView('catalog')" class="px-5 py-2.5 bg-[#FFCC00] text-black font-extrabold rounded-xl text-xs uppercase cursor-pointer">Find a Vehicle</button>
           </div>
@@ -802,7 +821,7 @@
         return;
       }
 
-      container.innerHTML = myBookings.map(b => `
+      container.innerHTML = userBookings.map(b => `
         <div class="bg-[#1E293B] border border-slate-700/80 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-3">
@@ -833,14 +852,20 @@
     }
 
     function updateBadge() {
-      const active = myBookings.filter(b => b.status !== 'CANCELLED').length;
       const badge = document.getElementById('booking-badge');
+      if (!activeUser) {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+        return;
+      }
+      const active = myBookings.filter(b => b.username === activeUser.username && b.status !== 'CANCELLED').length;
       if (active > 0) {
         badge.innerText = active;
         badge.classList.remove('hidden');
         badge.classList.add('flex');
       } else {
         badge.classList.add('hidden');
+        badge.classList.remove('flex');
       }
     }
 
@@ -1040,6 +1065,11 @@
       document.getElementById('user-name').innerText = user.fullName || user.username;
       document.getElementById('user-role').innerText = user.role === 'ROLE_ADMIN' ? 'Administrator' : 'Gold Member';
       document.getElementById('nav-admin').classList.toggle('hidden', user.role !== 'ROLE_ADMIN');
+      updateBadge();
+      const bookingsView = document.getElementById('view-bookings');
+      if (bookingsView && !bookingsView.classList.contains('hidden')) {
+        renderBookings();
+      }
     }
 
     function openAuthModal() {
@@ -1059,6 +1089,7 @@
       document.getElementById('user-profile').classList.add('hidden');
       document.getElementById('user-profile').classList.remove('flex');
       document.getElementById('nav-admin').classList.add('hidden');
+      updateBadge();
       switchView('catalog');
     }
 
