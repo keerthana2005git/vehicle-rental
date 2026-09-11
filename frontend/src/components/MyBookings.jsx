@@ -92,7 +92,7 @@ export function MyBookings({ user, onBackToFleet }) {
                       {b.startDate} ➔ {b.endDate} ({b.totalDays || 1} days)
                     </span>
                     <span>•</span>
-                    <span className="font-bold text-white">${b.totalAmount} Total</span>
+                    <span className="font-bold text-white">₹{Number(b.totalAmount).toLocaleString('en-IN')} Total</span>
                   </div>
 
                   {b.notes && (

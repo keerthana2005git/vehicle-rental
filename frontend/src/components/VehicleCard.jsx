@@ -77,20 +77,20 @@ export function VehicleCard({ vehicle, onSelect, days = 3 }) {
             <div className="text-left border-r border-slate-800 pr-2">
               <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Pay Now (Save 10%)</span>
               <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-xl font-extrabold text-white">${payNowRate}</span>
+                <span className="text-xl font-extrabold text-white">₹{payNowRate.toLocaleString('en-IN')}</span>
                 <span className="text-[11px] text-slate-400">/day</span>
               </div>
-              <span className="text-[10px] text-slate-400 font-medium">${totalPayNow} total ({days}d)</span>
+              <span className="text-[10px] text-slate-400 font-medium">₹{totalPayNow.toLocaleString('en-IN')} total ({days}d)</span>
             </div>
 
             {/* Standard Rate */}
             <div className="text-left pl-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pay at Counter</span>
               <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-lg font-bold text-slate-300">${vehicle.dailyRate}</span>
+                <span className="text-lg font-bold text-slate-300">₹{Number(vehicle.dailyRate).toLocaleString('en-IN')}</span>
                 <span className="text-[11px] text-slate-500">/day</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">${totalStandard} total ({days}d)</span>
+              <span className="text-[10px] text-slate-500 font-medium">₹{totalStandard.toLocaleString('en-IN')} total ({days}d)</span>
             </div>
           </div>
 

@@ -26,7 +26,7 @@ public class NotificationEventListener {
 
         if (email != null) {
             String subject = "Booking Confirmation - " + ref;
-            String message = String.format("Dear Customer, your vehicle reservation %s for %s has been created. Total amount: $%s. Please complete payment to confirm your booking.",
+            String message = String.format("Dear Customer, your vehicle reservation %s for %s has been created. Total amount: ₹%s. Please complete payment to confirm your booking.",
                     ref, vehicleInfo, amount);
 
             notificationService.recordEventNotification(email, subject, message, "BOOKING_CREATED");
@@ -61,7 +61,7 @@ public class NotificationEventListener {
 
         String email = "customer@vehiclerental.com"; // Default or extracted
         String subject = "Payment Receipt - " + txnId;
-        String message = String.format("Payment of $%s for Booking #%s was %s. Transaction ID: %s.",
+        String message = String.format("Payment of ₹%s for Booking #%s was %s. Transaction ID: %s.",
                 amount, bookingId, status, txnId);
 
         notificationService.recordEventNotification(email, subject, message, "PAYMENT_" + status);

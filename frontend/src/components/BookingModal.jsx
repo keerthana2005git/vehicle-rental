@@ -14,18 +14,18 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
 
   // Add-ons State
   const [addons, setAddons] = useState({
-    lossDamageWaiver: true, // $18/day
-    roadsideAssist: false,  // $7/day
-    childSeatOrGps: false   // $10/day
+    lossDamageWaiver: true, // ₹499/day
+    roadsideAssist: false,  // ₹199/day
+    childSeatOrGps: false   // ₹299/day
   });
 
   // Driver Form
   const [driver, setDriver] = useState({
-    firstName: user?.fullName ? user.fullName.split(' ')[0] : 'John',
-    lastName: user?.fullName ? user.fullName.split(' ')[1] || 'Doe' : 'Doe',
-    email: user?.email || 'john.doe@example.com',
-    phone: '+1 (555) 019-2834',
-    licenseNumber: 'DL-CA-987654321',
+    firstName: user?.fullName ? user.fullName.split(' ')[0] : '',
+    lastName: user?.fullName ? user.fullName.split(' ').slice(1).join(' ') || '' : '',
+    email: user?.email || '',
+    phone: user?.phone || '+91 98765 43210',
+    licenseNumber: user?.licenseNumber || 'DL-KA-2024001',
     notes: ''
   });
 
@@ -37,13 +37,13 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
     cardCvv: '123'
   });
 
-  // Price Calculations
+  // Price Calculations (in INR)
   const baseRateTotal = vehicle.dailyRate * days;
-  const ldwTotal = addons.lossDamageWaiver ? 18 * days : 0;
-  const roadsideTotal = addons.roadsideAssist ? 7 * days : 0;
-  const extraTotal = addons.childSeatOrGps ? 10 * days : 0;
+  const ldwTotal = addons.lossDamageWaiver ? 499 * days : 0;
+  const roadsideTotal = addons.roadsideAssist ? 199 * days : 0;
+  const extraTotal = addons.childSeatOrGps ? 299 * days : 0;
   const subtotal = baseRateTotal + ldwTotal + roadsideTotal + extraTotal;
-  const taxesAndFees = Math.round(subtotal * 0.10); // 10% tax
+  const taxesAndFees = Math.round(subtotal * 0.18); // 18% GST
   const grandTotal = subtotal + taxesAndFees;
 
   const handleCompleteBooking = async (e) => {
@@ -158,7 +158,7 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
                         <p className="text-xs text-slate-400 mt-1">Waives responsibility for accidental vehicle damage or theft.</p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-white whitespace-nowrap">+$18/day</span>
+                    <span className="text-sm font-bold text-white whitespace-nowrap">+₹499/day</span>
                   </div>
                 </div>
 
@@ -179,7 +179,7 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
                         <p className="text-xs text-slate-400 mt-1">24/7 key replacement, flat tire assistance, fuel delivery.</p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-white whitespace-nowrap">+$7/day</span>
+                    <span className="text-sm font-bold text-white whitespace-nowrap">+₹199/day</span>
                   </div>
                 </div>
 
@@ -200,7 +200,7 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
                         <p className="text-xs text-slate-400 mt-1">Sanitized child booster seat or offline navigation system.</p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-white whitespace-nowrap">+$10/day</span>
+                    <span className="text-sm font-bold text-white whitespace-nowrap">+₹299/day</span>
                   </div>
                 </div>
               </div>
@@ -374,36 +374,36 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
               {/* Price Breakdown */}
               <div className="space-y-2 text-xs py-4 border-b border-slate-800">
                 <div className="flex justify-between text-slate-300">
-                  <span>Vehicle Daily Rate (${vehicle.dailyRate} × {days}):</span>
-                  <span>${baseRateTotal}</span>
+                  <span>Vehicle Daily Rate (₹{Number(vehicle.dailyRate).toLocaleString('en-IN')} × {days}):</span>
+                  <span>₹{baseRateTotal.toLocaleString('en-IN')}</span>
                 </div>
                 {addons.lossDamageWaiver && (
                   <div className="flex justify-between text-slate-400">
                     <span>Loss Damage Waiver:</span>
-                    <span>${ldwTotal}</span>
+                    <span>₹{ldwTotal.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 {addons.roadsideAssist && (
                   <div className="flex justify-between text-slate-400">
                     <span>Roadside Assist:</span>
-                    <span>${roadsideTotal}</span>
+                    <span>₹{roadsideTotal.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 {addons.childSeatOrGps && (
                   <div className="flex justify-between text-slate-400">
                     <span>Equipment Add-on:</span>
-                    <span>${extraTotal}</span>
+                    <span>₹{extraTotal.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-slate-400">
-                  <span>Taxes & Concession (10%):</span>
-                  <span>${taxesAndFees}</span>
+                  <span>GST (18%):</span>
+                  <span>₹{taxesAndFees.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <div className="pt-4 flex items-baseline justify-between">
                 <span className="text-sm font-bold text-white">Estimated Total:</span>
-                <span className="text-2xl font-black text-[#FFCC00]">${grandTotal}</span>
+                <span className="text-2xl font-black text-[#FFCC00]">₹{grandTotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
@@ -428,7 +428,7 @@ export function BookingModal({ vehicle, searchParams, user, onClose, onBookingSu
                   {loading ? (
                     <span className="animate-pulse">Processing Booking & Payment...</span>
                   ) : (
-                    <span>CONFIRM & PAY ${grandTotal}</span>
+                    <span>CONFIRM & PAY ₹{grandTotal.toLocaleString('en-IN')}</span>
                   )}
                 </button>
               )}

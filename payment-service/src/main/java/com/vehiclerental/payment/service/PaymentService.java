@@ -38,7 +38,7 @@ public class PaymentService {
                 .bookingId(request.getBookingId())
                 .customerId(request.getCustomerId())
                 .amount(request.getAmount())
-                .currency(request.getCurrency() != null ? request.getCurrency() : "USD")
+                .currency(request.getCurrency() != null ? request.getCurrency() : "INR")
                 .paymentMethod(request.getPaymentMethod())
                 .status(status)
                 .failureReason(status == PaymentStatus.FAILED ? "Invalid transaction amount" : null)

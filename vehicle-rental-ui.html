@@ -91,9 +91,9 @@
         </div>
 
         <div id="user-profile" class="hidden items-center gap-3 pl-2 border-l border-slate-800">
-          <div id="user-avatar" class="w-9 h-9 rounded-full bg-[#FFCC00] text-black font-bold flex items-center justify-center text-sm shadow">J</div>
+          <div id="user-avatar" class="w-9 h-9 rounded-full bg-[#FFCC00] text-black font-bold flex items-center justify-center text-sm shadow">U</div>
           <div class="hidden lg:block text-left">
-            <p id="user-name" class="text-xs font-bold text-white leading-tight">John Doe</p>
+            <p id="user-name" class="text-xs font-bold text-white leading-tight">Member</p>
             <p id="user-role" class="text-[10px] text-slate-400">Gold Member</p>
           </div>
           <button onclick="logout()" title="Sign Out" class="p-2 text-slate-400 hover:text-red-400 cursor-pointer">
@@ -284,7 +284,7 @@
                   </p>
                   <p class="text-xs text-slate-400 mt-1">Waives responsibility for vehicle damage or theft.</p>
                 </div>
-                <span class="text-sm font-bold text-white">+$18/day</span>
+                <span class="text-sm font-bold text-white">+₹499/day</span>
               </div>
             </div>
 
@@ -294,7 +294,7 @@
                   <p class="text-sm font-bold text-white">Emergency Roadside Assistance</p>
                   <p class="text-xs text-slate-400 mt-1">Key replacement, flat tire change, roadside towing.</p>
                 </div>
-                <span class="text-sm font-bold text-white">+$7/day</span>
+                <span class="text-sm font-bold text-white">+₹199/day</span>
               </div>
             </div>
           </div>
@@ -305,20 +305,20 @@
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">First Name</label>
-                <input type="text" id="driver-first-name" value="John" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="text" id="driver-first-name" placeholder="First Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
               </div>
               <div>
                 <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Last Name</label>
-                <input type="text" id="driver-last-name" value="Doe" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+                <input type="text" id="driver-last-name" placeholder="Last Name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
               </div>
             </div>
             <div>
               <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Driver's License Number</label>
-              <input type="text" id="driver-license" value="DL-CA-987654321" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+              <input type="text" id="driver-license" placeholder="e.g. DL-KA-20240012345" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
             </div>
             <div>
               <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Email for Booking Receipt</label>
-              <input type="email" id="driver-email" value="john.doe@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
+              <input type="email" id="driver-email" placeholder="name@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white">
             </div>
           </div>
 
@@ -417,23 +417,92 @@
   </div>
 
   <!-- AUTH MODAL -->
-  <div id="auth-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
-    <div class="bg-[#1E293B] border border-slate-700 rounded-2xl w-full max-w-md p-6 sm:p-8 shadow-2xl">
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-[#1E293B] border border-slate-700 rounded-2xl w-full max-w-md p-6 sm:p-8 shadow-2xl my-8">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-black text-white">Hertz Account Sign In</h3>
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-[#FFCC00]">Hertz Account</span>
+          <h3 id="auth-modal-title" class="text-xl font-black text-white">Sign In to Your Account</h3>
+        </div>
         <button onclick="closeAuthModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-      <!-- Demo Pre-fills -->
-      <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl mb-4">
-        <p class="text-[11px] font-bold text-slate-400 mb-2">⚡ 1-Click Quick Demo Sign In:</p>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="loginAs('john_customer')" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200">Customer (John)</button>
-          <button onclick="loginAs('admin')" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-amber-300">Admin (Fleet Mgr)</button>
-        </div>
+
+      <!-- Tab Switcher -->
+      <div class="grid grid-cols-2 bg-slate-900 border border-slate-800 rounded-xl p-1 mb-5">
+        <button id="auth-tab-signin" onclick="switchAuthTab('signin')" class="py-2 text-xs font-black uppercase tracking-wider rounded-lg bg-[#FFCC00] text-black transition-all cursor-pointer">
+          Sign In
+        </button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')" class="py-2 text-xs font-black uppercase tracking-wider rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer">
+          Register / Join
+        </button>
       </div>
-      <button onclick="loginAs('john_customer')" class="w-full py-2.5 bg-[#FFCC00] hover:bg-[#E5B800] text-black font-black text-sm rounded-xl uppercase tracking-wider cursor-pointer">
-        Sign In with Demo Credentials
-      </button>
+
+      <!-- Notification / Error Message -->
+      <div id="auth-error" class="hidden mb-4 p-3 bg-rose-950/70 border border-rose-500/50 rounded-xl text-rose-300 text-xs"></div>
+      <div id="auth-success" class="hidden mb-4 p-3 bg-emerald-950/70 border border-emerald-500/50 rounded-xl text-emerald-300 text-xs"></div>
+
+      <!-- FORM 1: SIGN IN -->
+      <form id="form-signin" onsubmit="handleUserSignIn(event)" class="space-y-4">
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Username</label>
+          <input type="text" id="signin-username" placeholder="Username" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Password</label>
+          <input type="password" id="signin-password" placeholder="••••••••" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+        </div>
+        <button type="submit" class="w-full py-3 bg-[#FFCC00] hover:bg-[#E5B800] text-black font-black text-sm rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-[#FFCC00]/20">
+          Sign In
+        </button>
+
+        <!-- Quick 1-click Demo Fill -->
+        <div class="pt-2 border-t border-slate-800">
+          <p class="text-[10px] font-bold text-slate-400 mb-2">⚡ Quick 1-Click Demo Accounts:</p>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="quickFillAndLogin('john_customer', 'customer123')" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-slate-200 cursor-pointer">
+              John (Customer)
+            </button>
+            <button type="button" onclick="quickFillAndLogin('admin', 'admin123')" class="py-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-amber-300 cursor-pointer">
+              Admin (Fleet Mgr)
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- FORM 2: REGISTER -->
+      <form id="form-register" onsubmit="handleUserRegister(event)" class="hidden space-y-3">
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Full Name</label>
+          <input type="text" id="reg-fullname" placeholder="e.g. Keerthana R" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Email Address</label>
+          <input type="email" id="reg-email" placeholder="keerthana@example.com" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Username</label>
+            <input type="text" id="reg-username" placeholder="keerthana" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Password</label>
+            <input type="password" id="reg-password" placeholder="••••••••" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Phone (+91)</label>
+            <input type="tel" id="reg-phone" placeholder="9876543210" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Driving License</label>
+            <input type="text" id="reg-license" placeholder="DL-KA-2024001" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FFCC00]">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3 bg-[#FFCC00] hover:bg-[#E5B800] text-black font-black text-sm rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-[#FFCC00]/20 mt-2">
+          Create Account & Join
+        </button>
+      </form>
     </div>
   </div>
 
@@ -446,8 +515,8 @@
         model: "Model 3",
         category: "ELECTRIC",
         modelYear: 2023,
-        licensePlate: "CA-EV-101",
-        dailyRate: 85.0,
+        licensePlate: "KA-01-EV-1001",
+        dailyRate: 5500.0,
         status: "AVAILABLE",
         location: "Downtown Station",
         fuelType: "ELECTRIC",
@@ -461,8 +530,8 @@
         model: "X5 xDrive40i",
         category: "LUXURY",
         modelYear: 2024,
-        licensePlate: "NY-LUX-202",
-        dailyRate: 120.0,
+        licensePlate: "DL-03-LX-2002",
+        dailyRate: 8500.0,
         status: "AVAILABLE",
         location: "Airport Terminal 1",
         fuelType: "PETROL",
@@ -476,8 +545,8 @@
         model: "Camry Hybrid",
         category: "SEDAN",
         modelYear: 2023,
-        licensePlate: "TX-ECO-303",
-        dailyRate: 45.0,
+        licensePlate: "MH-02-EC-3003",
+        dailyRate: 2800.0,
         status: "AVAILABLE",
         location: "Downtown Station",
         fuelType: "HYBRID",
@@ -491,8 +560,8 @@
         model: "Mustang GT",
         category: "LUXURY",
         modelYear: 2023,
-        licensePlate: "FL-MUS-404",
-        dailyRate: 95.0,
+        licensePlate: "TN-07-MS-4004",
+        dailyRate: 7500.0,
         status: "AVAILABLE",
         location: "South Beach Hub",
         fuelType: "PETROL",
@@ -506,8 +575,8 @@
         model: "CR-V",
         category: "SUV",
         modelYear: 2022,
-        licensePlate: "WA-SUV-505",
-        dailyRate: 60.0,
+        licensePlate: "AP-09-CR-5005",
+        dailyRate: 3500.0,
         status: "AVAILABLE",
         location: "Airport Terminal 1",
         fuelType: "PETROL",
@@ -569,13 +638,13 @@
                 <div class="grid grid-cols-2 gap-2 mb-4 bg-slate-900/60 p-3 rounded-xl border border-slate-800 text-left">
                   <div class="border-r border-slate-800 pr-2">
                     <span class="text-[9px] font-bold text-emerald-400 uppercase">Pay Now (-10%)</span>
-                    <p class="text-xl font-black text-white">$${payNow}<span class="text-xs text-slate-400 font-normal">/d</span></p>
-                    <span class="text-[10px] text-slate-400">$${payNow * days} total</span>
+                    <p class="text-xl font-black text-white">₹${payNow.toLocaleString('en-IN')}<span class="text-xs text-slate-400 font-normal">/d</span></p>
+                    <span class="text-[10px] text-slate-400">₹${(payNow * days).toLocaleString('en-IN')} total</span>
                   </div>
                   <div class="pl-1">
                     <span class="text-[9px] font-bold text-slate-400 uppercase">Pay Later</span>
-                    <p class="text-base font-bold text-slate-300">$${v.dailyRate}<span class="text-xs text-slate-500 font-normal">/d</span></p>
-                    <span class="text-[10px] text-slate-500">$${Math.round(v.dailyRate * days)} total</span>
+                    <p class="text-base font-bold text-slate-300">₹${v.dailyRate.toLocaleString('en-IN')}<span class="text-xs text-slate-500 font-normal">/d</span></p>
+                    <span class="text-[10px] text-slate-500">₹${Math.round(v.dailyRate * days).toLocaleString('en-IN')} total</span>
                   </div>
                 </div>
                 <button onclick="openBookingModal(${v.id})" class="w-full py-3 bg-[#FFCC00] hover:bg-[#E5B800] text-black font-extrabold text-sm rounded-xl transition-all shadow cursor-pointer">
@@ -608,6 +677,16 @@
       selectedVehicle = FLEET_DATA.find(v => v.id === vehicleId);
       currentStep = 1;
       document.getElementById('modal-vehicle-title').innerText = `${selectedVehicle.make} ${selectedVehicle.model} (${selectedVehicle.modelYear})`;
+      
+      // Auto-prefill driver info if user is logged in
+      if (activeUser) {
+        const parts = (activeUser.fullName || '').split(' ');
+        document.getElementById('driver-first-name').value = parts[0] || activeUser.username;
+        document.getElementById('driver-last-name').value = parts.slice(1).join(' ') || '';
+        document.getElementById('driver-email').value = activeUser.email || '';
+        document.getElementById('driver-license').value = activeUser.licenseNumber || 'DL-KA-2024001';
+      }
+      
       updateModalStepUI();
       updateCalculation();
       document.getElementById('booking-modal').classList.remove('hidden');
@@ -631,17 +710,17 @@
     function updateCalculation() {
       const days = getRentalDays();
       const base = selectedVehicle.dailyRate * days;
-      const ldw = addons.ldw ? 18 * days : 0;
-      const road = addons.roadside ? 7 * days : 0;
+      const ldw = addons.ldw ? 499 * days : 0;
+      const road = addons.roadside ? 199 * days : 0;
       const subtotal = base + ldw + road;
-      const tax = Math.round(subtotal * 0.10);
-      const total = subtotal + tax;
+      const gst = Math.round(subtotal * 0.18); // 18% GST
+      const total = subtotal + gst;
 
       document.getElementById('summary-duration').innerText = days + " Day(s)";
-      document.getElementById('summary-daily-rate').innerText = "$" + selectedVehicle.dailyRate + "/day";
-      document.getElementById('summary-protection').innerText = "$" + (ldw + road);
-      document.getElementById('summary-taxes').innerText = "$" + tax;
-      document.getElementById('summary-total').innerText = "$" + total;
+      document.getElementById('summary-daily-rate').innerText = "₹" + selectedVehicle.dailyRate.toLocaleString('en-IN') + "/day";
+      document.getElementById('summary-protection').innerText = "₹" + (ldw + road).toLocaleString('en-IN');
+      document.getElementById('summary-taxes').innerText = "₹" + gst.toLocaleString('en-IN') + " (18% GST)";
+      document.getElementById('summary-total').innerText = "₹" + total.toLocaleString('en-IN');
       return total;
     }
 
@@ -688,7 +767,8 @@
         endDate: document.getElementById('search-end-date').value,
         days: days,
         amount: total,
-        status: 'CONFIRMED'
+        status: 'CONFIRMED',
+        driverName: (document.getElementById('driver-first-name').value + ' ' + document.getElementById('driver-last-name').value).trim() || 'Valued Customer'
       };
 
       myBookings.unshift(booking);
@@ -698,7 +778,7 @@
 
       document.getElementById('success-ref').innerText = ref;
       document.getElementById('success-car').innerText = booking.vehicleName;
-      document.getElementById('success-paid').innerText = "$" + total + " USD";
+      document.getElementById('success-paid').innerText = "₹" + total.toLocaleString('en-IN') + " INR";
       document.getElementById('success-modal').classList.remove('hidden');
 
       updateBadge();
@@ -730,7 +810,7 @@
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${b.status === 'CONFIRMED' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${b.status}</span>
             </div>
             <h4 class="text-lg font-bold text-white mt-1">${b.vehicleName}</h4>
-            <p class="text-xs text-slate-400 mt-1">${b.startDate} ➔ ${b.endDate} (${b.days} days) • <strong>$${b.amount}</strong></p>
+            <p class="text-xs text-slate-400 mt-1">${b.startDate} ➔ ${b.endDate} (${b.days} days) • <strong>₹${b.amount.toLocaleString('en-IN')} Total</strong></p>
           </div>
           <div>
             ${b.status !== 'CANCELLED' ? `
@@ -778,7 +858,7 @@
         <h3 class="text-lg font-black text-white mb-4">Fleet Inventory Database</h3>
         <table class="w-full text-left text-xs">
           <thead class="text-slate-400 border-b border-slate-700 uppercase">
-            <tr><th class="py-2">Vehicle</th><th>Category</th><th>Plate</th><th>Rate</th><th>Status</th></tr>
+            <tr><th class="py-2">Vehicle</th><th>Category</th><th>Plate</th><th>Rate (₹)</th><th>Status</th></tr>
           </thead>
           <tbody class="divide-y divide-slate-800">
             ${FLEET_DATA.map(v => `
@@ -786,7 +866,7 @@
                 <td class="py-2.5 font-bold text-white">${v.make} ${v.model}</td>
                 <td>${v.category}</td>
                 <td class="font-mono">${v.licensePlate}</td>
-                <td class="text-[#FFCC00] font-bold">$${v.dailyRate}/d</td>
+                <td class="text-[#FFCC00] font-bold">₹${v.dailyRate.toLocaleString('en-IN')}/d</td>
                 <td><span class="text-emerald-400 font-bold">${v.status}</span></td>
               </tr>
             `).join('')}
@@ -795,32 +875,199 @@
       `;
     }
 
-    function openAuthModal() {
-      document.getElementById('auth-modal').classList.remove('hidden');
+    // ==========================================
+    // USER REGISTRATION & AUTHENTICATION ENGINE
+    // ==========================================
+    function getRegisteredUsers() {
+      const defaultUsers = [
+        {
+          username: 'john_customer',
+          password: 'customer123',
+          fullName: 'John Doe',
+          email: 'john.doe@example.com',
+          phone: '+91 98765 43210',
+          licenseNumber: 'DL-KA-0120230004567',
+          role: 'ROLE_CUSTOMER'
+        },
+        {
+          username: 'admin',
+          password: 'admin123',
+          fullName: 'Administrator',
+          email: 'admin@vehiclerental.com',
+          phone: '+91 98765 00000',
+          licenseNumber: 'DL-ADMIN-001',
+          role: 'ROLE_ADMIN'
+        }
+      ];
+      const saved = localStorage.getItem('registered_users');
+      if (!saved) {
+        localStorage.setItem('registered_users', JSON.stringify(defaultUsers));
+        return defaultUsers;
+      }
+      return JSON.parse(saved);
     }
-    function closeAuthModal() {
-      document.getElementById('auth-modal').classList.add('hidden');
+
+    function switchAuthTab(tab) {
+      const isSignIn = tab === 'signin';
+      document.getElementById('auth-tab-signin').className = isSignIn
+        ? 'py-2 text-xs font-black uppercase tracking-wider rounded-lg bg-[#FFCC00] text-black transition-all cursor-pointer'
+        : 'py-2 text-xs font-black uppercase tracking-wider rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer';
+      document.getElementById('auth-tab-register').className = !isSignIn
+        ? 'py-2 text-xs font-black uppercase tracking-wider rounded-lg bg-[#FFCC00] text-black transition-all cursor-pointer'
+        : 'py-2 text-xs font-black uppercase tracking-wider rounded-lg text-slate-400 hover:text-white transition-all cursor-pointer';
+
+      document.getElementById('form-signin').classList.toggle('hidden', !isSignIn);
+      document.getElementById('form-register').classList.toggle('hidden', isSignIn);
+      document.getElementById('auth-modal-title').innerText = isSignIn ? 'Sign In to Your Account' : 'Create New Hertz Account';
+      document.getElementById('auth-error').classList.add('hidden');
+      document.getElementById('auth-success').classList.add('hidden');
     }
-    function loginAs(username) {
-      activeUser = {
-        username: username,
-        fullName: username === 'admin' ? 'Administrator' : 'John Doe',
-        role: username === 'admin' ? 'ROLE_ADMIN' : 'ROLE_CUSTOMER'
+
+    async function handleUserSignIn(e) {
+      e.preventDefault();
+      const username = document.getElementById('signin-username').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const errEl = document.getElementById('auth-error');
+      errEl.classList.add('hidden');
+
+      // 1. Try Backend API Gateway
+      try {
+        const res = await fetch('http://localhost:8080/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUserSession({
+            username: data.username,
+            fullName: data.fullName || data.username,
+            email: data.email,
+            role: data.role
+          });
+          closeAuthModal();
+          return;
+        }
+      } catch (e) {
+        // Backend offline, fallback to local users
+      }
+
+      // 2. Check local registered users
+      const users = getRegisteredUsers();
+      const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+      if (user) {
+        setUserSession(user);
+        closeAuthModal();
+      } else {
+        errEl.innerText = 'Invalid username or password. Please try again or click "Register / Join" to create an account.';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    async function handleUserRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const phone = document.getElementById('reg-phone').value.trim();
+      const licenseNumber = document.getElementById('reg-license').value.trim();
+      const errEl = document.getElementById('auth-error');
+      const succEl = document.getElementById('auth-success');
+
+      errEl.classList.add('hidden');
+      succEl.classList.add('hidden');
+
+      const users = getRegisteredUsers();
+      if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+        errEl.innerText = 'Username is already taken! Please choose another.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const newUser = {
+        username,
+        password,
+        fullName,
+        email,
+        phone: phone || '+91 98765 43210',
+        licenseNumber: licenseNumber || 'DL-KA-2024001',
+        role: 'ROLE_CUSTOMER'
       };
+
+      // Try Backend registration
+      try {
+        await fetch('http://localhost:8080/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, email, fullName, role: 'ROLE_CUSTOMER' })
+        });
+      } catch (e) {}
+
+      // Save locally
+      users.push(newUser);
+      localStorage.setItem('registered_users', JSON.stringify(users));
+
+      succEl.innerText = `Account created successfully for ${fullName}! Logging you in...`;
+      succEl.classList.remove('hidden');
+
+      setTimeout(() => {
+        setUserSession(newUser);
+        closeAuthModal();
+      }, 600);
+    }
+
+    function quickFillAndLogin(u, p) {
+      document.getElementById('signin-username').value = u;
+      document.getElementById('signin-password').value = p;
+      const users = getRegisteredUsers();
+      const found = users.find(user => user.username === u);
+      if (found) {
+        setUserSession(found);
+        closeAuthModal();
+      }
+    }
+
+    function setUserSession(user) {
+      activeUser = user;
+      localStorage.setItem('active_user', JSON.stringify(user));
       document.getElementById('auth-actions').classList.add('hidden');
       document.getElementById('user-profile').classList.remove('hidden');
       document.getElementById('user-profile').classList.add('flex');
-      document.getElementById('user-name').innerText = activeUser.fullName;
-      document.getElementById('user-role').innerText = activeUser.role === 'ROLE_ADMIN' ? 'Administrator' : 'Gold Member';
-      document.getElementById('nav-admin').classList.toggle('hidden', activeUser.role !== 'ROLE_ADMIN');
-      closeAuthModal();
+      
+      const initials = (user.fullName || user.username || 'U').charAt(0).toUpperCase();
+      document.getElementById('user-avatar').innerText = initials;
+      document.getElementById('user-name').innerText = user.fullName || user.username;
+      document.getElementById('user-role').innerText = user.role === 'ROLE_ADMIN' ? 'Administrator' : 'Gold Member';
+      document.getElementById('nav-admin').classList.toggle('hidden', user.role !== 'ROLE_ADMIN');
     }
+
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.remove('hidden');
+      document.getElementById('auth-error').classList.add('hidden');
+      document.getElementById('auth-success').classList.add('hidden');
+    }
+    
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.add('hidden');
+    }
+
     function logout() {
       activeUser = null;
+      localStorage.removeItem('active_user');
       document.getElementById('auth-actions').classList.remove('hidden');
       document.getElementById('user-profile').classList.add('hidden');
+      document.getElementById('user-profile').classList.remove('flex');
       document.getElementById('nav-admin').classList.add('hidden');
       switchView('catalog');
+    }
+
+    // Auto-restore session on page load
+    const savedSession = localStorage.getItem('active_user');
+    if (savedSession) {
+      try {
+        setUserSession(JSON.parse(savedSession));
+      } catch (e) {}
     }
 
     // Initial render

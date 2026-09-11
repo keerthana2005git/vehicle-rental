@@ -124,7 +124,7 @@ export function AdminDashboard({ vehicles, onAddVehicle, onBackToFleet }) {
               </select>
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Daily Rate ($)</label>
+              <label className="text-xs font-bold text-slate-400 uppercase block mb-1">Daily Rate (₹)</label>
               <input
                 type="number"
                 value={newCar.dailyRate}
@@ -194,7 +194,7 @@ export function AdminDashboard({ vehicles, onAddVehicle, onBackToFleet }) {
                   </td>
                   <td className="py-3 px-4">{v.category}</td>
                   <td className="py-3 px-4 font-mono">{v.licensePlate}</td>
-                  <td className="py-3 px-4 font-bold text-[#FFCC00]">${v.dailyRate}/day</td>
+                  <td className="py-3 px-4 font-bold text-[#FFCC00]">₹{Number(v.dailyRate).toLocaleString('en-IN')}/day</td>
                   <td className="py-3 px-4">{v.location}</td>
                   <td className="py-3 px-4">
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${

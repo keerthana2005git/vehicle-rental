@@ -3,7 +3,7 @@
 
 const API_BASE = '/api';
 
-// Demo initial fleet (matching backend seeded data)
+// Demo initial fleet (matching backend seeded data in INR)
 const INITIAL_VEHICLES = [
   {
     id: 1,
@@ -11,8 +11,8 @@ const INITIAL_VEHICLES = [
     model: "Model 3",
     category: "ELECTRIC",
     modelYear: 2023,
-    licensePlate: "CA-EV-101",
-    dailyRate: 85.0,
+    licensePlate: "KA-01-EV-1001",
+    dailyRate: 5500.0,
     status: "AVAILABLE",
     location: "Downtown Station",
     fuelType: "ELECTRIC",
@@ -27,8 +27,8 @@ const INITIAL_VEHICLES = [
     model: "X5 xDrive40i",
     category: "LUXURY",
     modelYear: 2024,
-    licensePlate: "NY-LUX-202",
-    dailyRate: 120.0,
+    licensePlate: "DL-03-LX-2002",
+    dailyRate: 8500.0,
     status: "AVAILABLE",
     location: "Airport Terminal 1",
     fuelType: "PETROL",
@@ -43,8 +43,8 @@ const INITIAL_VEHICLES = [
     model: "Camry Hybrid",
     category: "SEDAN",
     modelYear: 2023,
-    licensePlate: "TX-ECO-303",
-    dailyRate: 45.0,
+    licensePlate: "MH-02-EC-3003",
+    dailyRate: 2800.0,
     status: "AVAILABLE",
     location: "Downtown Station",
     fuelType: "HYBRID",
@@ -59,8 +59,8 @@ const INITIAL_VEHICLES = [
     model: "Mustang GT",
     category: "LUXURY",
     modelYear: 2023,
-    licensePlate: "FL-MUS-404",
-    dailyRate: 95.0,
+    licensePlate: "TN-07-MS-4004",
+    dailyRate: 7500.0,
     status: "AVAILABLE",
     location: "South Beach Hub",
     fuelType: "PETROL",
@@ -75,8 +75,8 @@ const INITIAL_VEHICLES = [
     model: "CR-V",
     category: "SUV",
     modelYear: 2022,
-    licensePlate: "WA-SUV-505",
-    dailyRate: 60.0,
+    licensePlate: "AP-09-CR-5005",
+    dailyRate: 3500.0,
     status: "AVAILABLE",
     location: "Airport Terminal 1",
     fuelType: "PETROL",
@@ -112,7 +112,24 @@ export const api = {
         return data;
       }
     } catch (e) {
-      console.warn('API Gateway offline, using simulated auth');
+      console.warn('API Gateway offline, using local registered users');
+    }
+
+    // Check locally registered users
+    const registered = JSON.parse(localStorage.getItem('registered_users') || '[]');
+    const existing = registered.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (existing) {
+      const authUser = {
+        token: 'local-jwt-' + Date.now(),
+        userId: existing.userId || Math.floor(Math.random() * 1000) + 10,
+        username: existing.username,
+        fullName: existing.fullName,
+        email: existing.email,
+        role: existing.role || 'ROLE_CUSTOMER'
+      };
+      localStorage.setItem('token', authUser.token);
+      localStorage.setItem('user', JSON.stringify(authUser));
+      return authUser;
     }
 
     // Fallback demo auth
@@ -121,8 +138,8 @@ export const api = {
       token: 'demo-jwt-token-' + Date.now(),
       userId: username === 'admin' ? 1 : 2,
       username,
-      fullName: username === 'admin' ? 'Administrator' : 'John Doe',
-      email: username === 'admin' ? 'admin@vehiclerental.com' : 'john.doe@example.com',
+      fullName: username === 'admin' ? 'Administrator' : (username === 'john_customer' ? 'John Doe' : (username.charAt(0).toUpperCase() + username.slice(1))),
+      email: username === 'admin' ? 'admin@vehiclerental.com' : (username === 'john_customer' ? 'john.doe@example.com' : `${username}@example.com`),
       role
     };
     localStorage.setItem('token', mockUser.token);
@@ -137,17 +154,28 @@ export const api = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
+        users.push({ ...userData, userId: data.userId });
+        localStorage.setItem('registered_users', JSON.stringify(users));
+        return data;
+      }
     } catch (e) {
-      console.warn('API Gateway offline, mock register');
+      console.warn('API Gateway offline, saving user locally');
     }
-    return {
-      userId: Math.floor(Math.random() * 1000),
+
+    const newUser = {
+      userId: Math.floor(Math.random() * 1000) + 10,
       username: userData.username,
       email: userData.email,
-      fullName: userData.fullName,
+      fullName: userData.fullName || userData.username,
       role: 'ROLE_CUSTOMER'
     };
+    const users = JSON.parse(localStorage.getItem('registered_users') || '[]');
+    users.push(newUser);
+    localStorage.setItem('registered_users', JSON.stringify(users));
+    return newUser;
   },
 
   // Vehicles

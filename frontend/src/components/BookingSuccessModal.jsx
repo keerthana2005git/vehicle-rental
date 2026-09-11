@@ -37,7 +37,7 @@ export function BookingSuccessModal({ data, onClose, onViewBookings }) {
             </div>
             <div>
               <span className="text-slate-400 block">Total Paid:</span>
-              <strong className="text-[#FFCC00]">${grandTotal} USD</strong>
+              <strong className="text-[#FFCC00]">₹{grandTotal.toLocaleString('en-IN')} INR</strong>
             </div>
             <div>
               <span className="text-slate-400 block">Pick-up Date:</span>
