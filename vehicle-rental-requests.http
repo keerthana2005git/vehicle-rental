@@ -1,0 +1,120 @@
+### =========================================================================
+### VEHICLE RENTAL PLATFORM - END-TO-END HTTP TEST SUITE
+### Base URL through API Gateway: http://localhost:8080
+### =========================================================================
+
+@gatewayUrl = http://localhost:8080
+
+### 1. Register a New Customer
+POST {{gatewayUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "sarah_connor",
+  "password": "Password123!",
+  "email": "sarah.c@example.com",
+  "fullName": "Sarah Connor",
+  "role": "ROLE_CUSTOMER"
+}
+
+### 2. Login to Authenticate (Retrieve JWT Token)
+# @name login
+POST {{gatewayUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "sarah_connor",
+  "password": "Password123!"
+}
+
+### Save JWT Token variable
+@authToken = {{login.response.body.token}}
+@userId = {{login.response.body.userId}}
+
+### 3. Verify / Validate Token
+GET {{gatewayUrl}}/api/auth/validate
+Authorization: Bearer {{authToken}}
+
+### 4. Create Customer Profile
+POST {{gatewayUrl}}/api/customers
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "userId": 3,
+  "firstName": "Sarah",
+  "lastName": "Connor",
+  "email": "sarah.c@example.com",
+  "phoneNumber": "+1-555-4321",
+  "drivingLicenseNumber": "DL-CA-99887766",
+  "address": "42 Cyberdyne Blvd, Los Angeles, CA",
+  "status": "ACTIVE"
+}
+
+### 5. List All Available Vehicles
+GET {{gatewayUrl}}/api/vehicles?status=AVAILABLE
+
+### 6. Filter Vehicles by Category (e.g. ELECTRIC or LUXURY)
+GET {{gatewayUrl}}/api/vehicles?category=ELECTRIC
+
+### 7. Add a New Vehicle (Admin Action)
+POST {{gatewayUrl}}/api/vehicles
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "make": "Porsche",
+  "model": "Taycan 4S",
+  "category": "ELECTRIC",
+  "modelYear": 2024,
+  "licensePlate": "CA-POR-911",
+  "dailyRate": 150.0,
+  "status": "AVAILABLE",
+  "location": "Airport Terminal 1",
+  "fuelType": "ELECTRIC",
+  "transmission": "AUTOMATIC",
+  "seatingCapacity": 4,
+  "imageUrl": "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e"
+}
+
+### 8. Create a Booking Reservation
+POST {{gatewayUrl}}/api/bookings
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "customerId": 1,
+  "vehicleId": 1,
+  "startDate": "2026-10-01",
+  "endDate": "2026-10-05",
+  "notes": "Flight arriving at 10 AM, need baby seat"
+}
+
+### 9. Get Booking by ID
+GET {{gatewayUrl}}/api/bookings/1
+Authorization: Bearer {{authToken}}
+
+### 10. Process Payment for Booking #1
+POST {{gatewayUrl}}/api/payments/process
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "bookingId": 1,
+  "customerId": 1,
+  "amount": 340.00,
+  "currency": "USD",
+  "paymentMethod": "CREDIT_CARD"
+}
+
+### 11. View Payment History for Booking #1
+GET {{gatewayUrl}}/api/payments/booking/1
+Authorization: Bearer {{authToken}}
+
+### 12. Check RabbitMQ Notification Logs
+GET {{gatewayUrl}}/api/notifications
+Authorization: Bearer {{authToken}}
+
+### 13. Check Notifications for Customer Email
+GET {{gatewayUrl}}/api/notifications/recipient/john.doe@example.com
+Authorization: Bearer {{authToken}}

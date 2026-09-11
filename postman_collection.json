@@ -1,0 +1,189 @@
+{
+  "info": {
+    "name": "Vehicle Rental Platform API",
+    "description": "Complete End-to-End API collection for Vehicle Rental Platform microservices through Spring Cloud Gateway",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Service",
+      "item": [
+        {
+          "name": "1. Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"sarah_connor\",\n  \"password\": \"Password123!\",\n  \"email\": \"sarah.c@example.com\",\n  \"fullName\": \"Sarah Connor\",\n  \"role\": \"ROLE_CUSTOMER\"\n}"
+            },
+            "url": "http://localhost:8080/api/auth/register"
+          }
+        },
+        {
+          "name": "2. Login (Demo Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": "http://localhost:8080/api/auth/login"
+          }
+        },
+        {
+          "name": "3. Login (Demo Customer)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john_customer\",\n  \"password\": \"customer123\"\n}"
+            },
+            "url": "http://localhost:8080/api/auth/login"
+          }
+        },
+        {
+          "name": "4. Validate Token",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": "http://localhost:8080/api/auth/validate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicle Service",
+      "item": [
+        {
+          "name": "1. List Available Vehicles",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/api/vehicles?status=AVAILABLE"
+          }
+        },
+        {
+          "name": "2. Create Vehicle (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"make\": \"Porsche\",\n  \"model\": \"Taycan\",\n  \"category\": \"ELECTRIC\",\n  \"modelYear\": 2024,\n  \"licensePlate\": \"CA-POR-911\",\n  \"dailyRate\": 150.0,\n  \"status\": \"AVAILABLE\",\n  \"location\": \"Airport Terminal 1\",\n  \"fuelType\": \"ELECTRIC\",\n  \"transmission\": \"AUTOMATIC\",\n  \"seatingCapacity\": 4\n}"
+            },
+            "url": "http://localhost:8080/api/vehicles"
+          }
+        },
+        {
+          "name": "3. Get Vehicle by ID",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:8080/api/vehicles/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customer Service",
+      "item": [
+        {
+          "name": "1. Create Customer Profile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 2,\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phoneNumber\": \"+1-555-0199\",\n  \"drivingLicenseNumber\": \"DL-CA-987654321\",\n  \"address\": \"742 Evergreen Terrace, Springfield, OR\"\n}"
+            },
+            "url": "http://localhost:8080/api/customers"
+          }
+        },
+        {
+          "name": "2. Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": "http://localhost:8080/api/customers/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Booking Service",
+      "item": [
+        {
+          "name": "1. Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": 1,\n  \"vehicleId\": 1,\n  \"startDate\": \"2026-10-01\",\n  \"endDate\": \"2026-10-05\",\n  \"notes\": \"Airport pickup requested\"\n}"
+            },
+            "url": "http://localhost:8080/api/bookings"
+          }
+        },
+        {
+          "name": "2. Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": "http://localhost:8080/api/bookings/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Service",
+      "item": [
+        {
+          "name": "1. Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": 1,\n  \"customerId\": 1,\n  \"amount\": 340.00,\n  \"currency\": \"USD\",\n  \"paymentMethod\": \"CREDIT_CARD\"\n}"
+            },
+            "url": "http://localhost:8080/api/payments/process"
+          }
+        },
+        {
+          "name": "2. Get Payment by Booking ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": "http://localhost:8080/api/payments/booking/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification Service",
+      "item": [
+        {
+          "name": "1. List All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": "http://localhost:8080/api/notifications"
+          }
+        }
+      ]
+    }
+  ]
+}

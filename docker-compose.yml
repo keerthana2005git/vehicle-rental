@@ -1,0 +1,215 @@
+networks:
+  rental-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: rental-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-mysql.sql:/docker-entrypoint-initdb.d/init-mysql.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rental-net
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: rental-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rental-net
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: rental-eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_APPLICATION_NAME=eureka-server
+      - SERVER_PORT=8761
+      - EUREKA_INSTANCE_HOSTNAME=eureka-server
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - rental-net
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: rental-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - rental-net
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: rental-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - mysql
+    networks:
+      - rental-net
+
+  vehicle-service:
+    build:
+      context: ./vehicle-service
+      dockerfile: Dockerfile
+    container_name: rental-vehicle-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - mysql
+    networks:
+      - rental-net
+
+  customer-service:
+    build:
+      context: ./customer-service
+      dockerfile: Dockerfile
+    container_name: rental-customer-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SERVER_PORT=8083
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+    depends_on:
+      - eureka-server
+      - mysql
+    networks:
+      - rental-net
+
+  booking-service:
+    build:
+      context: ./booking-service
+      dockerfile: Dockerfile
+    container_name: rental-booking-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SERVER_PORT=8084
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    networks:
+      - rental-net
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: rental-payment-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SERVER_PORT=8085
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    networks:
+      - rental-net
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: rental-notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SERVER_PORT=8086
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_AUTO_STARTUP=true
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    networks:
+      - rental-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rental-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - rental-net
+
